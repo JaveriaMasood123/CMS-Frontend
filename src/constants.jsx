@@ -32,6 +32,7 @@ export const MOCK_MENU_ITEMS = [
 
 export const MOCK_ORDERS = [
     { id: 'order-1', userId: 'user-2', customerName: 'Customer User', items: [{ item: MOCK_MENU_ITEMS[0], quantity: 1 }, { item: MOCK_MENU_ITEMS[1], quantity: 1 }], total: 30.49, status: 'Delivered', orderDate: '2023-10-26T10:00:00Z' },
+    
     { id: 'order-2', userId: 'user-2', customerName: 'Customer User', items: [{ item: MOCK_MENU_ITEMS[2], quantity: 2 }], total: 17.98, status: 'Pending', orderDate: '2023-10-27T11:30:00Z' },
 ];
 

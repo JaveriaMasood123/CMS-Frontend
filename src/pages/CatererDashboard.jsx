@@ -84,6 +84,10 @@ import { useAppContext } from '../context/AppContext';
 import CatererDashboardHome from './caterer/CatererDashboardHome';
 import CatererMenuManagement from './caterer/CatererMenuManagement';
 import CatererOrderManagement from './caterer/CatererOrderManagement';
+import CatererLoginPage from './caterer/CatererLoginPage';
+import CatererRegisterPage from './CatererRegisterPage';
+import CatererForgotPasswordPage from './caterer/CatererForgotPasswordPage';
+
 
 // Icons
 const DashboardIcon = () => (

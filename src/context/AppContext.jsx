@@ -87,11 +87,13 @@ export const AppProvider = ({ children }) => {
             const potentialMenu = menuItems.filter(i => !uniqueNames.includes(i.name));
             const menuToUse = potentialMenu.length > 0 ? potentialMenu : menuItems;
 
-            const recommendedNames = await geminiService.getMealPlan(uniqueNames, menuToUse, budget);
-            const recommendedItems = menuItems
-                .filter(i => recommendedNames.includes(i.name))
-                .sort((a, b) => recommendedNames.indexOf(a.name) - recommendedNames.indexOf(b.name));
-            setMealPlan(recommendedItems);
+            // Uncomment if geminiService is available
+            // const recommendedNames = await geminiService.getMealPlan(uniqueNames, menuToUse, budget);
+            // const recommendedItems = menuItems
+            //     .filter(i => recommendedNames.includes(i.name))
+            //     .sort((a, b) => recommendedNames.indexOf(a.name) - recommendedNames.indexOf(b.name));
+            // setMealPlan(recommendedItems);
+
         } catch (err) {
             console.error('Failed to generate meal plan', err);
             setMealPlan([]);
@@ -125,10 +127,20 @@ export const AppProvider = ({ children }) => {
         const exists = users.find(u => u.email.toLowerCase() === userData.email.toLowerCase());
         if (exists) return { success: false, message: 'Email already exists.' };
 
-        const newUser = { ...userData, id: `user-${Date.now()}` };
+        const newUser = { ...userData, id: `user-${Date.now()}`, role: 'CUSTOMER' };
         setUsers(prev => [...prev, newUser]);
         await login(newUser.email, newUser.password);
         return { success: true, message: 'Registration successful.' };
+    };
+
+    const registerCaterer = async (catererData) => {
+        const exists = users.find(u => u.email.toLowerCase() === catererData.email.toLowerCase());
+        if (exists) return { success: false, message: 'Email already exists.' };
+
+        const newCaterer = { ...catererData, id: `caterer-${Date.now()}`, role: 'CATERER' };
+        setUsers(prev => [...prev, newCaterer]);
+        await login(newCaterer.email, newCaterer.password); // auto-login after register
+        return { success: true, message: 'Caterer registration successful.' };
     };
 
     const resetPassword = async (email, newPassword) => {
@@ -143,7 +155,7 @@ export const AppProvider = ({ children }) => {
         return found ? { success: true, message: 'Password reset successful.' } : { success: false, message: 'User not found.' };
     };
 
-    // Users
+    // Users management
     const addUser = async (userData) => {
         const exists = users.find(u => u.email.toLowerCase() === userData.email.toLowerCase());
         if (exists) return { success: false, message: 'Email already exists.' };
@@ -168,7 +180,7 @@ export const AppProvider = ({ children }) => {
         return { success: true, message: 'User deleted successfully.' };
     };
 
-    // Menu
+    // Menu management
     const addMenuItem = async (itemData) => {
         const newItem = { ...itemData, id: `item-${Date.now()}` };
         setMenuItems(prev => [...prev, newItem]);
@@ -186,7 +198,7 @@ export const AppProvider = ({ children }) => {
         return { success: true, message: 'Item deleted successfully.' };
     };
 
-    // Categories
+    // Category management
     const addCategory = async (name) => {
         if (categories.some(c => c.name.toLowerCase() === name.toLowerCase())) {
             return { success: false, message: 'Category exists.' };
@@ -265,7 +277,7 @@ export const AppProvider = ({ children }) => {
             currentUser, users, menuItems, categories, orders, cart, favorites, mealPlan,
             isLoading: isLoading || isFetchingRecs,
             cartTotal,
-            login, logout, register, resetPassword,
+            login, logout, register, registerCaterer, resetPassword,   // <--- updated here
             addUser, updateUser, deleteUser,
             addMenuItem, updateMenuItem, deleteMenuItem,
             addCategory, updateCategory, deleteCategory,
@@ -284,8 +296,3 @@ export const useAppContext = () => {
     if (!context) throw new Error('useAppContext must be used within AppProvider');
     return context;
 };
-
-
-
-
-

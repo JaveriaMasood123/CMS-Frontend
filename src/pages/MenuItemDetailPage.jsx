@@ -125,10 +125,10 @@
 
 
 
-
 import React, { useState, useMemo } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
+import MenuItemCard from '../components/MenuItemCard'; // Make sure this import exists
 
 // Frontend JS ke liye manually define UserRole
 const UserRole = {
@@ -144,16 +144,14 @@ const MenuItemDetailPage = () => {
     const [quantity, setQuantity] = useState(1);
     const [added, setAdded] = useState(false);
 
+    // Wait for menuItems to load
+    if (!menuItems || menuItems.length === 0) {
+        return <div className="text-center py-10">Loading menu items...</div>;
+    }
+
     const item = useMemo(() => menuItems.find(i => i.id === itemId), [itemId, menuItems]);
     const caterer = useMemo(() => users.find(u => u.id === item?.catererId), [item, users]);
     const isItemFavorite = isFavorite(item?.id || '');
-
-    const relatedItems = useMemo(() => {
-        if (!item) return [];
-        return menuItems.filter(
-            mi => mi.categoryId === item.categoryId && mi.id !== item.id
-        ).slice(0, 4);
-    }, [item, menuItems]);
 
     if (!item) {
         return (
@@ -169,6 +167,10 @@ const MenuItemDetailPage = () => {
             </div>
         );
     }
+
+    const relatedItems = useMemo(() => 
+        menuItems.filter(mi => mi.categoryId === item.categoryId && mi.id !== item.id).slice(0, 4)
+    , [item, menuItems]);
 
     const handleAddToCart = () => {
         if (!currentUser) {
@@ -197,11 +199,7 @@ const MenuItemDetailPage = () => {
                     <div className="flex items-center space-x-4 mb-6">
                         <label htmlFor="quantity" className="font-semibold text-lg" style={{ color: '#030303' }}>Quantity:</label>
                         <div className="flex items-center border rounded-md" style={{ borderColor: '#123458' }}>
-                            <button 
-                                onClick={() => setQuantity(q => Math.max(1, q - 1))} 
-                                className="px-4 py-2 text-xl font-bold hover:opacity-70 transition-opacity"
-                                style={{ color: '#123458' }}
-                            >-</button>
+                            <button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="px-4 py-2 text-xl font-bold hover:opacity-70 transition-opacity" style={{ color: '#123458' }}>-</button>
                             <input
                                 id="quantity"
                                 type="number"
@@ -211,11 +209,7 @@ const MenuItemDetailPage = () => {
                                 style={{ borderColor: '#123458', color: '#030303' }}
                                 min="1"
                             />
-                            <button 
-                                onClick={() => setQuantity(q => q + 1)} 
-                                className="px-4 py-2 text-xl font-bold hover:opacity-70 transition-opacity"
-                                style={{ color: '#123458' }}
-                            >+</button>
+                            <button onClick={() => setQuantity(q => q + 1)} className="px-4 py-2 text-xl font-bold hover:opacity-70 transition-opacity" style={{ color: '#123458' }}>+</button>
                         </div>
                     </div>
 
@@ -226,15 +220,9 @@ const MenuItemDetailPage = () => {
                             className="flex-grow px-8 py-3 rounded-md font-semibold text-lg hover:opacity-90 disabled:opacity-50 transition-opacity flex items-center justify-center"
                             style={{ backgroundColor: added ? '#059669' : '#123458', color: 'white' }}
                         >
-                            {added ? (
-                                <>
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                    </svg>
-                                    Added!
-                                </>
-                            ) : 'Add to Cart'}
+                            {added ? 'Added!' : 'Add to Cart'}
                         </button>
+
                         {currentUser?.role === UserRole.CUSTOMER && (
                             <button
                                 onClick={() => item && toggleFavorite(item.id)}
@@ -246,17 +234,12 @@ const MenuItemDetailPage = () => {
                                 }}
                                 aria-label={isItemFavorite ? `Remove ${item.name} from favorites` : `Add ${item.name} to favorites`}
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill={isItemFavorite ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={1}>
-                                    <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-                                </svg>
+                                ♥
                             </button>
                         )}
                     </div>
-                    <ReactRouterDOM.Link 
-                        to="/menu" 
-                        className="text-center mt-4 hover:underline font-semibold"
-                        style={{ color: '#123458' }}
-                    >
+
+                    <ReactRouterDOM.Link to="/menu" className="text-center mt-4 hover:underline font-semibold" style={{ color: '#123458' }}>
                         &larr; Back to Menu
                     </ReactRouterDOM.Link>
                 </div>
