@@ -1,4 +1,8 @@
-# React + Vite
+# GourmetGo Catering Service
+
+This is a comprehensive, website-based catering service system.
+
+## React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
