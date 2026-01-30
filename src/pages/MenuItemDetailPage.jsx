@@ -144,6 +144,11 @@ const MenuItemDetailPage = () => {
     const [quantity, setQuantity] = useState(1);
     const [added, setAdded] = useState(false);
 
+    // ⭐ Rating + 💬 Comments state (ADDED)
+    const [rating, setRating] = useState(0);
+    const [comments, setComments] = useState([]);
+    const [commentText, setCommentText] = useState("");
+
     // Wait for menuItems to load
     if (!menuItems || menuItems.length === 0) {
         return <div className="text-center py-10">Loading menu items...</div>;
@@ -194,7 +199,83 @@ const MenuItemDetailPage = () => {
                     </p>
                     <h1 className="text-4xl font-bold mb-4" style={{ color: '#030303' }}>{item.name}</h1>
                     <p className="mb-6 text-lg" style={{ color: '#666666' }}>{item.description}</p>
-                    <span className="text-4xl font-bold mb-6" style={{ color: '#123458' }}>PKR {item.price.toFixed(2)}</span>
+                    <span className="text-4xl font-bold mb-6" style={{ color: '#123458' }}>
+                        PKR {item.price.toFixed(2)}
+                    </span>
+
+                      
+                      <p className="mb-2 text-md" style={{ color: '#666666' }}>
+  Servings: {item.servings} {item.servings > 1 ? 'people' : 'person'}
+</p>
+<p className="mb-4 text-md" style={{ color: '#666666' }}>
+  Ingredients: {item.ingredients?.join(', ')}
+</p>
+
+
+
+
+                    {/* ⭐ Star Rating (ADDED) */}
+                    <div className="mb-6">
+                        <h3 className="font-semibold text-lg mb-2" style={{ color: '#030303' }}>
+                            Rate this dish
+                        </h3>
+                        {[1, 2, 3, 4, 5].map((star) => (
+                            <span
+                                key={star}
+                                className="text-3xl cursor-pointer"
+                                style={{ color: star <= rating ? "#facc15" : "#d1d5db" }}
+                                onClick={() => setRating(star)}
+                            >
+                                ★
+                            </span>
+                        ))}
+                        <p className="text-sm mt-1" style={{ color: "#666666" }}>
+                            Your Rating: {rating} ⭐
+                        </p>
+                    </div>
+
+                    {/* 💬 Comment Box (ADDED) */}
+                    <div className="mb-6">
+                        <h3 className="font-semibold text-lg mb-2" style={{ color: '#030303' }}>
+                            Leave a comment
+                        </h3>
+                        <textarea
+                            value={commentText}
+                            onChange={(e) => setCommentText(e.target.value)}
+                            placeholder="Write your comment..."
+                            className="w-full border rounded-md p-3 text-sm"
+                            style={{ borderColor: "#123458" }}
+                        />
+                        <button
+                            onClick={() => {
+                                if (commentText.trim() !== "") {
+                                    setComments([...comments, commentText]);
+                                    setCommentText("");
+                                }
+                            }}
+                            className="mt-2 px-6 py-2 rounded-md font-semibold hover:opacity-90 transition-opacity"
+                            style={{ backgroundColor: "#123458", color: "white" }}
+                        >
+                            Post Comment
+                        </button>
+                    </div>
+
+                    {/* 📜 Comments List (ADDED) */}
+                    <div className="mb-8">
+                        <h3 className="font-semibold text-lg mb-2" style={{ color: '#030303' }}>
+                            Comments
+                        </h3>
+                        {comments.length === 0 && (
+                            <p className="text-sm" style={{ color: "#666666" }}>
+                                No comments yet
+                            </p>
+                        )}
+                        {comments.map((c, i) => (
+                            <p key={i} className="text-sm mb-1" style={{ color: "#030303" }}>
+                                💬 {c}
+                            </p>
+                        ))}
+                    </div>
 
                     <div className="flex items-center space-x-4 mb-6">
                         <label htmlFor="quantity" className="font-semibold text-lg" style={{ color: '#030303' }}>Quantity:</label>
