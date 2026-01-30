@@ -234,7 +234,6 @@
 
 
 
-
 import React, { useState, useEffect } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
@@ -247,7 +246,8 @@ const CheckoutPage = () => {
     const [paymentError, setPaymentError] = useState('');
     const [formData, setFormData] = useState({
         name: currentUser?.name || '',
-        address: '',
+        permanentAddress: '',
+        deliveryAddress: '',
         city: '',
         zip: '',
         phone: '',
@@ -287,7 +287,8 @@ const CheckoutPage = () => {
         let isValid = true;
 
         if (!formData.name) { newErrors.name = 'Full name is required'; isValid = false; }
-        if (!formData.address) { newErrors.address = 'Address is required'; isValid = false; }
+        if (!formData.permanentAddress) { newErrors.permanentAddress = 'Permanent address is required'; isValid = false; }
+        if (!formData.deliveryAddress) { newErrors.deliveryAddress = 'Delivery address is required'; isValid = false; }
         if (!formData.city) { newErrors.city = 'City is required'; isValid = false; }
         if (!/^\d{5,6}$/.test(formData.zip)) { newErrors.zip = 'Enter a valid ZIP code'; isValid = false; }
         if (!/^\d{10,15}$/.test(formData.phone)) { newErrors.phone = 'Enter a valid phone number'; isValid = false; }
@@ -335,7 +336,6 @@ const CheckoutPage = () => {
             jazzcashCNIC: formData.jazzcashCNIC,
         };
 
-        // Simulate small delay for UX
         setTimeout(async () => {
             const result = await placeOrder(paymentInfo);
             if (result.success && result.order) {
@@ -349,77 +349,55 @@ const CheckoutPage = () => {
 
     return (
         <div className="p-8 rounded-lg shadow-lg max-w-6xl mx-auto border" style={{ backgroundColor: '#FFFFFF', borderColor: '#123458' }}>
-            <h1 className="text-3xl font-bold mb-6 text-center" style={{ color: '#030303' }}>Checkout</h1>
+            <h1 className="text-3xl font-bold mb-2 text-center" style={{ color: '#030303' }}>Checkout</h1>
+
+            {/* Display logged-in user info */}
+            {currentUser && (
+                <div className="text-center mb-6" style={{ color: '#030303' }}>
+                    <p><strong>Name:</strong> {currentUser.name}</p>
+                    <p><strong>Email:</strong> {currentUser.email}</p>
+                </div>
+            )}
+
             <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-12">
-                {/* Left: Form */}
                 <form onSubmit={handleSubmit} className="space-y-8">
                     <div className="space-y-4">
                         <h2 className="text-xl font-semibold border-b pb-2" style={{ color: '#030303', borderColor: '#123458' }}>Delivery Address</h2>
                         <div>
                             <label style={{ color: '#030303' }}>Name</label>
-                            <input 
-                                type="text" 
-                                name="name" 
-                                value={formData.name} 
-                                onChange={handleFormChange} 
-                                className="mt-1 block w-full p-2 rounded-md" 
-                                style={{ borderColor: '#123458', color: '#030303', backgroundColor: '#FFFFFF' }}
-                            />
+                            <input type="text" name="name" value={formData.name} onChange={handleFormChange} className="mt-1 block w-full p-2 rounded-md" style={{ borderColor: '#123458', color: '#030303', backgroundColor: '#FFFFFF' }} />
                             {errors.name && <p className="text-red-500 text-xs">{errors.name}</p>}
                         </div>
                         <div>
-                            <label style={{ color: '#030303' }}>Address</label>
-                            <input 
-                                type="text" 
-                                name="address" 
-                                value={formData.address} 
-                                onChange={handleFormChange} 
-                                className="mt-1 block w-full p-2 rounded-md" 
-                                style={{ borderColor: '#123458', color: '#030303', backgroundColor: '#FFFFFF' }}
-                            />
-                            {errors.address && <p className="text-red-500 text-xs">{errors.address}</p>}
+                            <label style={{ color: '#030303' }}>Permanent Address</label>
+                            <input type="text" name="permanentAddress" value={formData.permanentAddress} onChange={handleFormChange} className="mt-1 block w-full p-2 rounded-md" style={{ borderColor: '#123458', color: '#030303', backgroundColor: '#FFFFFF' }} />
+                            {errors.permanentAddress && <p className="text-red-500 text-xs">{errors.permanentAddress}</p>}
+                        </div>
+                        <div>
+                            <label style={{ color: '#030303' }}>Delivery Address</label>
+                            <input type="text" name="deliveryAddress" value={formData.deliveryAddress} onChange={handleFormChange} className="mt-1 block w-full p-2 rounded-md" style={{ borderColor: '#123458', color: '#030303', backgroundColor: '#FFFFFF' }} />
+                            {errors.deliveryAddress && <p className="text-red-500 text-xs">{errors.deliveryAddress}</p>}
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label style={{ color: '#030303' }}>City</label>
-                                <input 
-                                    type="text" 
-                                    name="city" 
-                                    value={formData.city} 
-                                    onChange={handleFormChange} 
-                                    className="mt-1 block w-full p-2 rounded-md" 
-                                    style={{ borderColor: '#123458', color: '#030303', backgroundColor: '#FFFFFF' }}
-                                />
+                                <input type="text" name="city" value={formData.city} onChange={handleFormChange} className="mt-1 block w-full p-2 rounded-md" style={{ borderColor: '#123458', color: '#030303', backgroundColor: '#FFFFFF' }} />
                                 {errors.city && <p className="text-red-500 text-xs">{errors.city}</p>}
                             </div>
                             <div>
                                 <label style={{ color: '#030303' }}>ZIP</label>
-                                <input 
-                                    type="text" 
-                                    name="zip" 
-                                    value={formData.zip} 
-                                    onChange={handleFormChange} 
-                                    className="mt-1 block w-full p-2 rounded-md" 
-                                    style={{ borderColor: '#123458', color: '#030303', backgroundColor: '#FFFFFF' }}
-                                />
+                                <input type="text" name="zip" value={formData.zip} onChange={handleFormChange} className="mt-1 block w-full p-2 rounded-md" style={{ borderColor: '#123458', color: '#030303', backgroundColor: '#FFFFFF' }} />
                                 {errors.zip && <p className="text-red-500 text-xs">{errors.zip}</p>}
                             </div>
                         </div>
                         <div>
                             <label style={{ color: '#030303' }}>Phone</label>
-                            <input 
-                                type="tel" 
-                                name="phone" 
-                                value={formData.phone} 
-                                onChange={handleFormChange} 
-                                className="mt-1 block w-full p-2 rounded-md" 
-                                style={{ borderColor: '#123458', color: '#030303', backgroundColor: '#FFFFFF' }}
-                            />
+                            <input type="tel" name="phone" value={formData.phone} onChange={handleFormChange} className="mt-1 block w-full p-2 rounded-md" style={{ borderColor: '#123458', color: '#030303', backgroundColor: '#FFFFFF' }} />
                             {errors.phone && <p className="text-red-500 text-xs">{errors.phone}</p>}
                         </div>
                     </div>
 
-                    {/* Payment */}
+                    {/* Payment Method (same as before) */}
                     <div className="space-y-4">
                         <h2 className="text-xl font-semibold border-b pb-2" style={{ color: '#030303', borderColor: '#123458' }}>Payment Method</h2>
                         <label className="flex items-center p-3 border rounded-md cursor-pointer" style={{ borderColor: '#123458' }}>
@@ -428,39 +406,13 @@ const CheckoutPage = () => {
                         </label>
                         {formData.paymentMethod === 'credit-card' && (
                             <div className="p-4 border rounded-md space-y-2" style={{ borderColor: '#123458', backgroundColor: '#F8FAFC' }}>
-                                <input 
-                                    type="text" 
-                                    name="cardNumber" 
-                                    placeholder="Card Number" 
-                                    value={paymentDetails.cardNumber} 
-                                    onChange={handlePaymentDetailsChange} 
-                                    className="w-full p-2 rounded-md" 
-                                    style={{ borderColor: '#123458', color: '#030303', backgroundColor: '#FFFFFF' }}
-                                />
+                                <input type="text" name="cardNumber" placeholder="Card Number" value={paymentDetails.cardNumber} onChange={handlePaymentDetailsChange} className="w-full p-2 rounded-md" style={{ borderColor: '#123458', color: '#030303', backgroundColor: '#FFFFFF' }} />
                                 {errors.cardNumber && <p className="text-red-500 text-xs">{errors.cardNumber}</p>}
                                 <div className="flex gap-2">
-                                    <input 
-                                        type="text" 
-                                        name="expiry" 
-                                        placeholder="MM/YY" 
-                                        value={paymentDetails.expiry} 
-                                        onChange={handlePaymentDetailsChange} 
-                                        className="flex-1 p-2 rounded-md" 
-                                        style={{ borderColor: '#123458', color: '#030303', backgroundColor: '#FFFFFF' }}
-                                    />
-                                    <input 
-                                        type="text" 
-                                        name="cvv" 
-                                        placeholder="CVV" 
-                                        value={paymentDetails.cvv} 
-                                        onChange={handlePaymentDetailsChange} 
-                                        className="flex-1 p-2 rounded-md" 
-                                        style={{ borderColor: '#123458', color: '#030303', backgroundColor: '#FFFFFF' }}
-                                    />
+                                    <input type="text" name="expiry" placeholder="MM/YY" value={paymentDetails.expiry} onChange={handlePaymentDetailsChange} className="flex-1 p-2 rounded-md" style={{ borderColor: '#123458', color: '#030303', backgroundColor: '#FFFFFF' }} />
+                                    <input type="text" name="cvv" placeholder="CVV" value={paymentDetails.cvv} onChange={handlePaymentDetailsChange} className="flex-1 p-2 rounded-md" style={{ borderColor: '#123458', color: '#030303', backgroundColor: '#FFFFFF' }} />
                                 </div>
-                                {(errors.expiry || errors.cvv) && (
-                                    <p className="text-red-500 text-xs">{errors.expiry || errors.cvv}</p>
-                                )}
+                                {(errors.expiry || errors.cvv) && (<p className="text-red-500 text-xs">{errors.expiry || errors.cvv}</p>)}
                             </div>
                         )}
                         <label className="flex items-center p-3 border rounded-md cursor-pointer" style={{ borderColor: '#123458' }}>
@@ -469,26 +421,9 @@ const CheckoutPage = () => {
                         </label>
                         {formData.paymentMethod === 'jazzcash' && (
                             <div className="p-4 border rounded-md space-y-2" style={{ borderColor: '#123458', backgroundColor: '#F8FAFC' }}>
-                                <input 
-                                    type="tel" 
-                                    name="jazzcashNumber" 
-                                    placeholder="JazzCash Number" 
-                                    value={formData.jazzcashNumber} 
-                                    onChange={handleFormChange} 
-                                    className="w-full p-2 rounded-md" 
-                                    style={{ borderColor: '#123458', color: '#030303', backgroundColor: '#FFFFFF' }}
-                                />
+                                <input type="tel" name="jazzcashNumber" placeholder="JazzCash Number" value={formData.jazzcashNumber} onChange={handleFormChange} className="w-full p-2 rounded-md" style={{ borderColor: '#123458', color: '#030303', backgroundColor: '#FFFFFF' }} />
                                 {errors.jazzcashNumber && <p className="text-red-500 text-xs">{errors.jazzcashNumber}</p>}
-                                <input 
-                                    type="text" 
-                                    name="jazzcashCNIC" 
-                                    placeholder="Last 6 digits of CNIC" 
-                                    value={formData.jazzcashCNIC} 
-                                    onChange={handleFormChange} 
-                                    maxLength={6} 
-                                    className="w-full p-2 rounded-md" 
-                                    style={{ borderColor: '#123458', color: '#030303', backgroundColor: '#FFFFFF' }}
-                                />
+                                <input type="text" name="jazzcashCNIC" placeholder="Last 6 digits of CNIC" value={formData.jazzcashCNIC} onChange={handleFormChange} maxLength={6} className="w-full p-2 rounded-md" style={{ borderColor: '#123458', color: '#030303', backgroundColor: '#FFFFFF' }} />
                                 {errors.jazzcashCNIC && <p className="text-red-500 text-xs">{errors.jazzcashCNIC}</p>}
                             </div>
                         )}
@@ -496,25 +431,15 @@ const CheckoutPage = () => {
 
                     {paymentError && <p className="text-red-500 text-center">{paymentError}</p>}
 
-                    <button 
-                        type="submit" 
-                        disabled={isProcessing} 
-                        className="w-full p-3 rounded-md hover:opacity-90 transition-opacity"
-                        style={{ backgroundColor: '#123458', color: 'white' }}
-                    >
+                    <button type="submit" disabled={isProcessing} className="w-full p-3 rounded-md hover:opacity-90 transition-opacity" style={{ backgroundColor: '#123458', color: 'white' }}>
                         {isProcessing ? 'Processing...' : `Place Order - PKR ${(cartTotal + 250).toFixed(2)}`}
                     </button>
 
-                    <ReactRouterDOM.Link 
-                        to="/cart" 
-                        className="block text-center mt-2 hover:underline font-semibold"
-                        style={{ color: '#123458' }}
-                    >
+                    <ReactRouterDOM.Link to="/cart" className="block text-center mt-2 hover:underline font-semibold" style={{ color: '#123458' }}>
                         &larr; Back to Cart
                     </ReactRouterDOM.Link>
                 </form>
 
-                {/* Right: Summary */}
                 <div className="lg:sticky lg:top-24 mt-8 lg:mt-0">
                     <div className="p-6 rounded-lg border" style={{ backgroundColor: '#F8FAFC', borderColor: '#123458' }}>
                         <h3 className="text-xl font-semibold mb-4 border-b pb-2" style={{ color: '#030303', borderColor: '#123458' }}>Order Summary</h3>
